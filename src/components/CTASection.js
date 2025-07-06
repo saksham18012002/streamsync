@@ -4,34 +4,37 @@ function CTASection({ isLoggedIn, setShowSignupModal }) {
   return (
     <section className="py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Watch Together?</h2>
-        <p className="text-xl mb-8 max-w-2xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 animate-fadeIn">Ready to Watch Together?</h2>
+        <p className="text-xl mb-8 max-w-2xl mx-auto animate-slideUp">
           Join thousands of people who are already enjoying synchronized streaming with friends and family around the world.
         </p>
         
-        {!isLoggedIn && (
+        {!isLoggedIn ? (
           <button 
             onClick={() => setShowSignupModal(true)}
-            className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl"
+            className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 animate-pulse"
           >
             Get Started Free
           </button>
-        )}
-        
-        {isLoggedIn && (
-          <button 
-            className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl"
+        ) : (
+          <a 
+            href="/content" 
+            className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center inline-flex animate-pulse"
           >
-            Create a Watch Room
-          </button>
+            <span>Watch Now!</span>
+            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </a>
         )}
         
         <div className="mt-10 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
           <div className="flex items-center">
             <div className="flex -space-x-2 mr-3">
-              <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-xs">JD</div>
-              <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-xs">KL</div>
-              <div className="w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center text-xs">MR</div>
+              <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-xs animate-bounce">JD</div>
+              <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-xs animate-bounce" style={{animationDelay: "0.1s"}}>KL</div>
+              <div className="w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center text-xs animate-bounce" style={{animationDelay: "0.2s"}}>MR</div>
             </div>
             <span className="text-sm">Joined this week</span>
           </div>

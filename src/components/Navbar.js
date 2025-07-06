@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import UserProfile from './UserProfile';
 
-function Navbar({ theme, toggleTheme, isLoggedIn, setShowLoginModal, setShowSignupModal, user, handleLogout }) {
+function Navbar({ isLoggedIn, setShowLoginModal, setShowSignupModal, user, handleLogout }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   
@@ -21,32 +21,19 @@ function Navbar({ theme, toggleTheme, isLoggedIn, setShowLoginModal, setShowSign
               <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-2 text-sm font-medium">
                 How It Works
               </a>
-              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-2 text-sm font-medium">
+              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-2 text-sm font-medium">
                 Features
               </a>
-              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-2 text-sm font-medium">
-                Pricing
-              </a>
+              <span className="text-green-500 dark:text-green-400 px-3 py-2 text-sm font-medium flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                </svg>
+                100% Free
+              </span>
             </div>
           </div>
           
           <div className="flex items-center">
-            <button 
-              onClick={toggleTheme}
-              className="theme-toggle p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
-              aria-label="Toggle dark mode"
-            >
-              {theme === 'dark' ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd"></path>
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                </svg>
-              )}
-            </button>
-            
             {!isLoggedIn ? (
               <div className="hidden md:flex items-center ml-4 space-x-2">
                 <button 
@@ -57,7 +44,7 @@ function Navbar({ theme, toggleTheme, isLoggedIn, setShowLoginModal, setShowSign
                 </button>
                 <button 
                   onClick={() => setShowSignupModal(true)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm"
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm hover:scale-105 transition-transform"
                 >
                   Sign Up
                 </button>
@@ -106,12 +93,15 @@ function Navbar({ theme, toggleTheme, isLoggedIn, setShowLoginModal, setShowSign
             <a href="#how-it-works" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
               How It Works
             </a>
-            <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <a href="#features" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
               Features
             </a>
-            <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-              Pricing
-            </a>
+            <div className="block px-3 py-2 rounded-md text-base font-medium text-green-500 dark:text-green-400 flex items-center">
+              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+              </svg>
+              100% Free
+            </div>
             
             {!isLoggedIn ? (
               <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">

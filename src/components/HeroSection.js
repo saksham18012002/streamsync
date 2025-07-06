@@ -6,31 +6,42 @@ function HeroSection({ isLoggedIn, setShowSignupModal, handleLearnMore }) {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-10 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fadeIn">
               Watch Together, <br />Miles Apart
             </h1>
-            <p className="text-xl mb-8 opacity-90">
-              Synchronize your streaming experience with friends and family, no matter where they are. Share reactions, chat, and enjoy content together in real-time.
+            <p className="text-xl mb-8 opacity-90 animate-slideUp">
+              Synchronize your streaming experience with friends and family, no matter where they are. Share reactions, chat, and enjoy content together in real-time. <span className="font-bold text-yellow-300">100% Free!</span>
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              {!isLoggedIn && (
+            <div className="flex flex-col sm:flex-row gap-4 animate-fadeIn">
+              {!isLoggedIn ? (
                 <button 
                   onClick={() => setShowSignupModal(true)}
-                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl"
+                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   Get Started Free
                 </button>
+              ) : (
+                <a 
+                  href="/content" 
+                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
+                >
+                  <span>Watch Now!</span>
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </a>
               )}
               <button 
                 onClick={handleLearnMore}
-                className="bg-transparent border-2 border-white hover:bg-white/10 px-8 py-3 rounded-lg font-medium text-lg transition-all"
+                className="bg-transparent border-2 border-white hover:bg-white/10 px-8 py-3 rounded-lg font-medium text-lg transition-all hover:scale-105"
               >
                 Learn More
               </button>
             </div>
           </div>
           <div className="md:w-1/2 relative">
-            <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-white/20 floating">
+            <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-white/20 floating animate-fadeIn">
               <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="bg-gray-900 p-3 flex items-center">
                   <div className="flex space-x-2">
@@ -42,17 +53,17 @@ function HeroSection({ isLoggedIn, setShowSignupModal, handleLearnMore }) {
                 </div>
                 <div className="aspect-video bg-black relative">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-16 h-16 text-white/80 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" fillRule="evenodd"></path>
                     </svg>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 bg-gray-900/80 backdrop-blur-sm rounded-lg p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs">JD</div>
-                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs">KL</div>
-                        <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-xs">MR</div>
-                        <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs">+2</div>
+                        <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs animate-bounce">JD</div>
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs animate-bounce" style={{animationDelay: "0.1s"}}>KL</div>
+                        <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-xs animate-bounce" style={{animationDelay: "0.2s"}}>MR</div>
+                        <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs animate-bounce" style={{animationDelay: "0.3s"}}>+2</div>
                       </div>
                       <div className="text-white text-sm">Watching together</div>
                     </div>
@@ -60,7 +71,7 @@ function HeroSection({ isLoggedIn, setShowSignupModal, handleLearnMore }) {
                 </div>
                 <div className="p-3 bg-gray-800">
                   <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div className="bg-purple-600 h-full w-1/3"></div>
+                    <div className="bg-purple-600 h-full w-1/3 animate-progressBar"></div>
                   </div>
                   <div className="flex justify-between text-xs text-gray-400 mt-1">
                     <span>00:15:30</span>
@@ -69,13 +80,13 @@ function HeroSection({ isLoggedIn, setShowSignupModal, handleLearnMore }) {
                 </div>
               </div>
               <div className="mt-4 bg-gray-800/50 backdrop-blur-sm rounded-lg p-3">
-                <div className="flex items-start mb-3">
+                <div className="flex items-start mb-3 animate-slideInLeft">
                   <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs mr-2">KL</div>
                   <div className="bg-blue-600/20 rounded-lg p-2 max-w-[80%]">
                     <p className="text-sm">No way! I didn't see that coming 😱</p>
                   </div>
                 </div>
-                <div className="flex items-start justify-end">
+                <div className="flex items-start justify-end animate-slideInRight">
                   <div className="bg-purple-600/20 rounded-lg p-2 max-w-[80%]">
                     <p className="text-sm">I know right? The plot twist was amazing!</p>
                   </div>
