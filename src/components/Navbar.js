@@ -1,166 +1,270 @@
-import React, { useState } from 'react';
-import UserProfile from './UserProfile';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
-function Navbar({ isLoggedIn, setShowLoginModal, setShowSignupModal, user, handleLogout }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+const Navbar = ({ darkMode, toggleDarkMode, user, setShowLoginModal, onWatchNow }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isJoinPartyModalOpen, setIsJoinPartyModalOpen] = useState(false);
+  const [partyCode, setPartyCode] = useState('');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   
+  // Check if we're on the content page
+  const isContentPage = location.pathname === '/browse';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleJoinParty = () => {
+    setIsJoinPartyModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsJoinPartyModalOpen(false);
+  };
+
+  const handleSubmitPartyCode = (e) => {
+    e.preventDefault();
+    // Generate a random party code if empty
+    const finalPartyCode = partyCode || Math.random().toString(36).substring(2, 8).toUpperCase();
+    navigate(`/watch-party/${finalPartyCode}`);
+    setIsJoinPartyModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    navigate('/');
+    window.location.reload();
+  };
+
+  const handleLoginClick = (e) => {
+    e.preventDefault();
+    setShowLoginModal(true);
+  };
+
+  const handleWatchNowClick = (e) => {
+    e.preventDefault();
+    if (onWatchNow) {
+      onWatchNow();
+    } else {
+      navigate('/browse');
+    }
+  };
+
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <a href="/" className="flex items-center">
-              <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
-              </svg>
-              <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">StreamSync</span>
-            </a>
-            
-            <div className="hidden md:ml-6 md:flex md:space-x-6">
-              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-2 text-sm font-medium">
-                How It Works
-              </a>
-              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-2 text-sm font-medium">
-                Features
-              </a>
-              <span className="text-green-500 dark:text-green-400 px-3 py-2 text-sm font-medium flex items-center">
-                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                </svg>
-                100% Free
+    <motion.nav 
+      className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 flex justify-between items-center transition-all duration-300 ${
+        isScrolled 
+          ? darkMode 
+            ? 'bg-gray-900/95 backdrop-blur-md shadow-lg' 
+            : 'bg-white/95 backdrop-blur-md shadow-lg' 
+          : darkMode 
+            ? 'bg-transparent' 
+            : 'bg-transparent'
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', stiffness: 120 }}
+    >
+      <div className="flex items-center">
+        <Link to="/" className="text-blue-600 font-bold text-2xl mr-10 flex items-center">
+          <span className="mr-2">🎬</span>
+          StreamSync
+        </Link>
+      </div>
+      
+      {/* Only show these navigation items on the content page */}
+      {isContentPage && (
+        <div className="hidden md:flex space-x-6">
+          <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
+          <Link to="/browse" className="hover:text-blue-600 transition-colors">Browse</Link>
+          <button onClick={handleJoinParty} className="hover:text-blue-600 transition-colors">Join Party</button>
+        </div>
+      )}
+      
+      <div className="flex items-center space-x-4">
+        {/* Dark Mode Toggle */}
+        <motion.button 
+          onClick={toggleDarkMode} 
+          className={`p-2 rounded-full ${darkMode ? 'bg-yellow-400 text-gray-900' : 'bg-gray-800 text-yellow-400'}`}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          {darkMode ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+          )}
+        </motion.button>
+        
+        {user ? (
+          <div className="flex items-center space-x-4">
+            <motion.div 
+              className="flex items-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="h-9 w-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-2 shadow-md">
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <span className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} font-medium`}>
+                {user.name || 'User'}
               </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center">
-            {!isLoggedIn ? (
-              <div className="hidden md:flex items-center ml-4 space-x-2">
-                <button 
-                  onClick={() => setShowLoginModal(true)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
-                >
-                  Log In
-                </button>
-                <button 
-                  onClick={() => setShowSignupModal(true)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm hover:scale-105 transition-transform"
-                >
-                  Sign Up
-                </button>
-              </div>
-            ) : (
-              <div className="hidden md:block ml-4 relative">
-                <button 
-                  onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center space-x-2 focus:outline-none"
-                >
-                  <img 
-                    src={user?.avatar || "https://ui-avatars.com/api/?name=User&background=random"} 
-                    alt="Profile" 
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span className="text-gray-700 dark:text-gray-200 font-medium">{user?.name || "User"}</span>
-                  <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                  </svg>
-                </button>
-                
-                {profileOpen && (
-                  <UserProfile user={user} handleLogout={handleLogout} setProfileOpen={setProfileOpen} />
-                )}
-              </div>
-            )}
-            
-            <div className="md:hidden ml-4">
-              <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+            </motion.div>
+            {!isContentPage && (
+              <motion.button 
+                onClick={handleWatchNowClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors flex items-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                <span>Watch Now</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                 </svg>
-              </button>
-            </div>
+              </motion.button>
+            )}
+            <motion.button 
+              onClick={handleLogout}
+              className="bg-transparent hover:bg-blue-100 text-blue-600 px-4 py-2 rounded border border-blue-600 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Sign Out
+            </motion.button>
           </div>
+        ) : (
+          <motion.button
+            onClick={handleLoginClick}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Sign In
+          </motion.button>
+        )}
+        
+        <div className="md:hidden">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="focus:outline-none">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
         </div>
       </div>
       
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-800 shadow-lg">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <a href="#how-it-works" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-              How It Works
-            </a>
-            <a href="#features" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-              Features
-            </a>
-            <div className="block px-3 py-2 rounded-md text-base font-medium text-green-500 dark:text-green-400 flex items-center">
-              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-              </svg>
-              100% Free
-            </div>
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            className={`absolute top-16 right-0 ${darkMode ? 'bg-gray-800' : 'bg-white'} w-48 py-2 mt-2 rounded shadow-xl z-20`}
+            initial={{ opacity: 0, scale: 0.9, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link to="/" className={`block px-4 py-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>Home</Link>
             
-            {!isLoggedIn ? (
-              <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center px-3">
-                  <button 
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setShowLoginModal(true);
-                    }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Log In
-                  </button>
-                </div>
-                <div className="mt-3 px-3">
-                  <button 
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setShowSignupModal(true);
-                    }}
-                    className="block w-full px-3 py-2 rounded-md text-base font-medium text-white bg-purple-600 hover:bg-purple-700"
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center px-3">
-                  <div className="flex-shrink-0">
-                    <img 
-                      src={user?.avatar || "https://ui-avatars.com/api/?name=User&background=random"} 
-                      alt="Profile" 
-                      className="w-10 h-10 rounded-full"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800 dark:text-white">{user?.name || "User"}</div>
-                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{user?.email || "user@example.com"}</div>
-                  </div>
-                </div>
-                <div className="mt-3 space-y-1">
-                  <button 
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              </div>
+            {/* Only show these menu items on the content page */}
+            {isContentPage && (
+              <>
+                <Link to="/browse" className={`block px-4 py-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>Browse</Link>
+                <button onClick={handleJoinParty} className={`block w-full text-left px-4 py-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>Join Party</button>
+              </>
             )}
-          </div>
-        </div>
-      )}
-    </nav>
+            
+            {user && (
+              <>
+                {!isContentPage && (
+                  <button 
+                    onClick={handleWatchNowClick} 
+                    className={`block w-full text-left px-4 py-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  >
+                    Watch Now
+                  </button>
+                )}
+                <button 
+                  onClick={handleLogout} 
+                  className={`block w-full text-left px-4 py-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                >
+                  Sign Out
+                </button>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isJoinPartyModalOpen && (
+          <motion.div 
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-8 rounded-lg max-w-md w-full`}
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              transition={{ type: 'spring', damping: 15 }}
+            >
+              <h2 className="text-2xl font-bold mb-4">Join Watch Party</h2>
+              <form onSubmit={handleSubmitPartyCode}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2">Enter Party Code</label>
+                  <input
+                    type="text"
+                    value={partyCode}
+                    onChange={(e) => setPartyCode(e.target.value)}
+                    className={`w-full p-3 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'} border rounded`}
+                    placeholder="Enter code or leave empty to generate"
+                  />
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <motion.button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} rounded transition-colors`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Join
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
-}
+};
 
 export default Navbar;

@@ -1,4 +1,6 @@
 import React from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import HeroSection from '../components/HeroSection';
 import HowItWorks from '../components/HowItWorks';
 import Features from '../components/Features';
@@ -14,15 +16,21 @@ function LandingPage({
   showLoginModal,
   setShowLoginModal,
   showSignupModal,
-  setShowSignupModal
+  setShowSignupModal,
+  darkMode,
+  toggleDarkMode
 }) {
   const handleLogin = (userData) => {
+    // Store auth token in localStorage for persistence
+    localStorage.setItem('authToken', 'sample-token');
     setUser(userData);
     setIsLoggedIn(true);
     setShowLoginModal(false);
   };
   
   const handleSignup = (userData) => {
+    // Store auth token in localStorage for persistence
+    localStorage.setItem('authToken', 'sample-token');
     setUser(userData);
     setIsLoggedIn(true);
     setShowSignupModal(false);
@@ -36,26 +44,40 @@ function LandingPage({
   };
 
   return (
-    <>
-      <HeroSection 
-        isLoggedIn={isLoggedIn} 
-        setShowSignupModal={setShowSignupModal}
-        handleLearnMore={handleLearnMore}
+    <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+      <Navbar 
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        user={user}
+        setShowLoginModal={setShowLoginModal}
       />
       
-      <HowItWorks />
-      <Features />
+      <main className="flex-grow">
+        <HeroSection 
+          isLoggedIn={isLoggedIn} 
+          setShowSignupModal={setShowSignupModal}
+          handleLearnMore={handleLearnMore}
+          darkMode={darkMode}
+        />
+        
+        <HowItWorks darkMode={darkMode} />
+        <Features darkMode={darkMode} />
+        
+        <CTASection 
+          isLoggedIn={isLoggedIn} 
+          setShowSignupModal={setShowSignupModal}
+          darkMode={darkMode}
+        />
+      </main>
       
-      <CTASection 
-        isLoggedIn={isLoggedIn} 
-        setShowSignupModal={setShowSignupModal} 
-      />
+      <Footer darkMode={darkMode} />
       
       {showLoginModal && (
         <LoginModal 
           setShowLoginModal={setShowLoginModal} 
           setShowSignupModal={setShowSignupModal}
           handleLogin={handleLogin}
+          darkMode={darkMode}
         />
       )}
       
@@ -64,9 +86,10 @@ function LandingPage({
           setShowSignupModal={setShowSignupModal} 
           setShowLoginModal={setShowLoginModal}
           handleSignup={handleSignup}
+          darkMode={darkMode}
         />
       )}
-    </>
+    </div>
   );
 }
 
