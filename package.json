@@ -9,8 +9,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
-    "react-scripts": "^0.0.0",
-    "web-vitals": "^2.1.4"
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
@@ -18,8 +19,8 @@
     "tailwindcss": "^3.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "dev": "react-scripts start",
+    "start": "cross-env PORT=3001 react-scripts start",
+    "dev": "cross-env PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -42,16 +43,5 @@
       "last 1 safari version"
     ]
   },
-  "main": "postcss.config.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/saksham18012002/streamsync.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/saksham18012002/streamsync/issues"
-  },
-  "homepage": "https://github.com/saksham18012002/streamsync#readme",
-  "description": ""
+  "homepage": "."
 }
