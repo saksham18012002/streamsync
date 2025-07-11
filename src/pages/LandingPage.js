@@ -27,13 +27,37 @@ function LandingPage({
     setIsLoggedIn(true);
     setShowLoginModal(false);
   };
-  
-  const handleSignup = (userData) => {
-    // Store auth token in localStorage for persistence
-    localStorage.setItem('authToken', 'sample-token');
-    setUser(userData);
-    setIsLoggedIn(true);
-    setShowSignupModal(false);
+
+  const handleSignup = async ({ name, email, password }) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone: "0000000000"
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Signup successful!");
+        setUser(data.user); // optional
+        setIsLoggedIn(true);
+        setShowSignupModal(false);
+      } else {
+        alert("Signup failed: " + data.message);
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Something went wrong.");
+    }
   };
 
   const handleLearnMore = () => {
@@ -51,7 +75,7 @@ function LandingPage({
         user={user}
         setShowLoginModal={setShowLoginModal}
       />
-      
+
       <main className="flex-grow">
         <HeroSection 
           isLoggedIn={isLoggedIn} 
@@ -69,9 +93,9 @@ function LandingPage({
           darkMode={darkMode}
         />
       </main>
-      
+
       <Footer darkMode={darkMode} />
-      
+
       {showLoginModal && (
         <LoginModal 
           setShowLoginModal={setShowLoginModal} 
@@ -80,7 +104,7 @@ function LandingPage({
           darkMode={darkMode}
         />
       )}
-      
+
       {showSignupModal && (
         <SignupModal 
           setShowSignupModal={setShowSignupModal} 
