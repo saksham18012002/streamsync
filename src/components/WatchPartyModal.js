@@ -29,29 +29,54 @@ const WatchPartyModal = ({ content = {}, onClose, onCreateParty, darkMode }) => 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(generatedCode);
     setCopySuccess(true);
-    
+
     setTimeout(() => {
       setCopySuccess(false);
     }, 2000);
   };
 
-  const handleStartWatching = () => {
-    onCreateParty({
-      contentId: contentId,
-      partyName: partyName || `${contentTitle} Party`,
-      isPrivate,
-      partyCode: generatedCode
-    });
+  const handleStartWatching = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/sessions/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contentId: content?._id || content?.id,
+          partyName: partyName || `${contentTitle} Party`,
+          isPrivate
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Call the parent component's function with the sessionId
+        onCreateParty({
+          contentId: content?._id || content?.id,
+          partyName: partyName || `${contentTitle} Party`,
+          isPrivate,
+          partyCode: data.sessionId
+        });
+      } else {
+        alert(data.message || 'Failed to create watch party');
+      }
+    } catch (err) {
+      console.error('Error creating party:', err);
+      alert('An error occurred while creating the party.');
+    }
   };
 
+
   return (
-    <motion.div 
+    <motion.div
       className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <motion.div 
+      <motion.div
         className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} p-8 rounded-lg max-w-md w-full`}
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -115,9 +140,9 @@ const WatchPartyModal = ({ content = {}, onClose, onCreateParty, darkMode }) => 
             <div className="flex mb-6">
               <div className="w-24 h-36 rounded-lg mr-4 overflow-hidden">
                 {contentPosterUrl ? (
-                  <img 
-                    src={contentPosterUrl} 
-                    alt={contentTitle} 
+                  <img
+                    src={contentPosterUrl}
+                    alt={contentTitle}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;

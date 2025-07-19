@@ -1,54 +1,82 @@
-// src/pages/SignupPage.js
 import React, { useState } from 'react';
+import axios from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 
-const SignupPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
+const Signup = () => {
+  const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    const formData = { name, email, phone, password };
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/users/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
+      const res = await axios.post('/api/users/register', form);
+      const userData = res.data;
 
-      const data = await res.json();
-      console.log(data);
+      // Store token or user info in localStorage
+      localStorage.setItem('token', userData.token);
+      localStorage.setItem('user', JSON.stringify(userData.user));
 
-      if (res.ok) {
-        alert('Registered successfully!');
-        navigate('/login');
-      } else {
-        alert(data.message || 'Registration failed.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Something went wrong.');
+      // Redirect to dashboard after signup
+      navigate('/dashboard');
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Signup failed. Please try again.');
     }
   };
 
   return (
-    <div className="p-8 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full border p-2 rounded" required />
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border p-2 rounded" required />
-        <input type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full border p-2 rounded" required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border p-2 rounded" required />
-        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Register</button>
+    <div className="min-h-screen bg-black flex items-center justify-center text-white">
+      <form onSubmit={handleSignup} className="bg-gray-800 p-8 rounded w-full max-w-sm shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+
+        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600"
+          value={form.username}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="w-full p-2 mb-6 rounded bg-gray-700 border border-gray-600"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 hover:bg-green-700 transition-colors py-2 rounded font-semibold"
+        >
+          Sign Up
+        </button>
       </form>
     </div>
   );
 };
 
-export default SignupPage;
+export default Signup;

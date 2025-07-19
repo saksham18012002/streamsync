@@ -15,61 +15,63 @@ const ContentPage = ({ user, setUser, darkMode, toggleDarkMode, setShowLoginModa
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Check auth token and redirect if not found
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-        navigate('/');
-      }
-    };
-    checkAuth();
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+      navigate('/');
+    }
   }, [navigate]);
 
+  // ✅ Fetch contents once user is logged in
   useEffect(() => {
     if (isLoggedIn) {
       fetchContents();
     }
   }, [isLoggedIn]);
 
+  // ✅ Fetch videos from correct backend API
   const fetchContents = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/videos');
-      const data = await res.json();
+      const response = await fetch('http://localhost:3000/api/videos');
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+      const data = await response.json();
+
+      // Arrange videos into categories (assumes at least 12 items for demo)
       const formattedData = {
         trending: data.slice(0, 4),
         popular: data.slice(4, 8),
         newReleases: data.slice(8, 12)
       };
+
       setContents(formattedData);
-      setLoading(false);
     } catch (err) {
-      console.error('Failed to fetch content:', err);
-      setError('Failed to fetch content. Please try again later.');
+      console.error('Error fetching content:', err);
+      setError('Failed to load content. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Triggered when user starts a watch party
   const handleCreateWatchParty = (content) => {
-    if (content) {
-      setSelectedContent(content);
-      setShowWatchPartyModal(true);
-    } else {
-      setSelectedContent({
-        _id: 'default',
-        title: 'Sample Movie',
-        genre: 'Action & Adventure',
-        language: 'English',
-        thumbnail: 'https://via.placeholder.com/300x200?text=Sample+Movie'
-      });
-      setShowWatchPartyModal(true);
-    }
+    setSelectedContent(content || {
+      _id: 'default',
+      title: 'Sample Movie',
+      genre: 'Action & Adventure',
+      language: 'English',
+      thumbnail: 'https://via.placeholder.com/300x200?text=Sample+Movie'
+    });
+    setShowWatchPartyModal(true);
   };
 
   const handleWatchNow = () => {
-    if (contents && contents.trending && contents.trending.length > 0) {
+    if (contents?.trending?.length > 0) {
       navigate(`/watch/${contents.trending[0]._id}`);
     } else {
       navigate('/watch/default');
@@ -96,6 +98,7 @@ const ContentPage = ({ user, setUser, darkMode, toggleDarkMode, setShowLoginModa
         setShowLoginModal={setShowLoginModal}
         onWatchNow={handleWatchNow}
       />
+
       <div className="flex">
         <Sidebar darkMode={darkMode} />
         <div className="ml-16 md:ml-64 pt-16 p-6 w-full">
@@ -111,7 +114,7 @@ const ContentPage = ({ user, setUser, darkMode, toggleDarkMode, setShowLoginModa
             <div className="flex items-center justify-center h-[calc(100vh-64px)]">
               <div className="text-xl">{error}</div>
             </div>
-          ) : contents && Object.keys(contents).length > 0 ? (
+          ) : contents ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -124,6 +127,7 @@ const ContentPage = ({ user, setUser, darkMode, toggleDarkMode, setShowLoginModa
                   Continue watching where you left off or discover something new.
                 </p>
               </div>
+
               <ContentGrid
                 title="Trending Now"
                 contents={contents.trending}

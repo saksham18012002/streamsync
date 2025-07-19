@@ -7,6 +7,7 @@ import Features from '../components/Features';
 import CTASection from '../components/CTASection';
 import LoginModal from '../components/LoginModal';
 import SignupModal from '../components/SignupModal';
+import api from '../api/axios'; // ✅ using the axios instance you created
 
 function LandingPage({ 
   isLoggedIn, 
@@ -21,7 +22,6 @@ function LandingPage({
   toggleDarkMode
 }) {
   const handleLogin = (userData) => {
-    // Store auth token in localStorage for persistence
     localStorage.setItem('authToken', 'sample-token');
     setUser(userData);
     setIsLoggedIn(true);
@@ -30,33 +30,26 @@ function LandingPage({
 
   const handleSignup = async ({ name, email, password }) => {
     try {
-      const res = await fetch('http://localhost:5000/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          phone: "0000000000"
-        }),
+      const response = await api.post('/users/register', {
+        name,
+        email,
+        password,
+        phone: "0000000000"
       });
 
-      const data = await res.json();
+      const data = response.data;
 
-      if (res.ok) {
-        alert("Signup successful!");
-        setUser(data.user); // optional
-        setIsLoggedIn(true);
-        setShowSignupModal(false);
-      } else {
-        alert("Signup failed: " + data.message);
-      }
+      alert("Signup successful!");
+      setUser(data.user); // optional
+      setIsLoggedIn(true);
+      setShowSignupModal(false);
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Something went wrong.");
+      if (error.response && error.response.data && error.response.data.message) {
+        alert("Signup failed: " + error.response.data.message);
+      } else {
+        alert("Something went wrong.");
+      }
     }
   };
 

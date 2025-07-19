@@ -1,27 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import axios from '../api/axios';
 
-const WatchPage = () => {
+const WatchPage = ({ user, darkMode, toggleDarkMode }) => {
   const { contentId } = useParams();
   const [video, setVideo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/videos/${contentId}`);
-        const data = await res.json();
-        if (res.ok) {
-          setVideo(data);
-        } else {
-          setError(data.message || 'Failed to fetch video');
-        }
+        const res = await axios.get(`/api/videos/${contentId}`);
+        setVideo(res.data);
       } catch (err) {
-        setError('Error loading video');
-      } finally {
-        setLoading(false);
+        setError('Video not found or failed to load.');
       }
     };
 
@@ -29,14 +22,12 @@ const WatchPage = () => {
   }, [contentId]);
 
   return (
-    <div className="bg-black min-h-screen text-white">
+    <div className={`${darkMode ? 'bg-black text-white' : 'bg-white text-black'} min-h-screen`}>
       <Navbar />
       <div className="pt-16 p-6">
-        {loading ? (
-          <p className="text-lg">Loading video...</p>
-        ) : error ? (
-          <p className="text-red-400 text-lg">{error}</p>
-        ) : video && video.videoUrl ? (
+        {error ? (
+          <p className="text-red-500 text-lg">{error}</p>
+        ) : video ? (
           <>
             <h1 className="text-2xl font-bold mb-4">{video.title}</h1>
             <div className="bg-gray-800 w-full aspect-video mb-4 rounded overflow-hidden">
@@ -51,7 +42,7 @@ const WatchPage = () => {
             <p className="text-gray-300">{video.description}</p>
           </>
         ) : (
-          <p className="text-lg">No video available for this content.</p>
+          <p className="text-lg">Loading video...</p>
         )}
       </div>
     </div>
