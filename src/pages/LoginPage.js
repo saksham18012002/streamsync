@@ -7,23 +7,23 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await axios.post('/api/users/login', { email, password });
-      const userData = res.data;
+      const res = await axios.post('/users/login', { email, password });
 
-      // Store token or user info in localStorage
-      localStorage.setItem('token', userData.token);
-      localStorage.setItem('user', JSON.stringify(userData.user));
+      const { token, user } = res.data;
 
-      // Redirect after successful login
-      navigate('/dashboard');
+      // Store token and user securely in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      navigate('/dashboard'); // Redirect after successful login
     } catch (err) {
-      console.error(err);
+      console.error('Login failed:', err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     }
   };
@@ -60,7 +60,7 @@ const Login = () => {
           Login
         </button>
       </form>
-    </div>
+    </div>  
   );
 };
 
