@@ -9,7 +9,9 @@ const LoginModal = ({ setShowLoginModal, setShowSignupModal, handleLogin, darkMo
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email && password) {
-      handleLogin({ email, name: 'User' }); // In a real app, name would come from the backend
+      // handleLogin({ email, name: 'User' }); // In a real app, name would come from the backend
+      /**☢️ Sachin: Above function call is incorrect. Updaing it with following: */
+      handleLogin({ email, password}); 
     } else {
       setError('Please enter both email and password');
     }

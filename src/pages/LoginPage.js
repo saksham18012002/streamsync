@@ -7,13 +7,25 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await axios.post('/users/login', { email, password });
+      console.log('Sending login request...', email, password);
+      
+      const res = await axios.post(
+        'http://localhost:3000/api/users/login',
+        { email, password },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true,
+        }
+      );
+
 
       const { user } = res.data;
 
@@ -59,7 +71,7 @@ const Login = () => {
           Login
         </button>
       </form>
-    </div>  
+    </div>
   );
 };
 
