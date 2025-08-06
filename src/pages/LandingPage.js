@@ -7,7 +7,7 @@ import Features from '../components/Features';
 import CTASection from '../components/CTASection';
 import LoginModal from '../components/LoginModal';
 import SignupModal from '../components/SignupModal';
-import api from '../api/axios'; // ✅ using the axios instance you created
+import api from '../api/axios';
 
 function LandingPage({ 
   isLoggedIn, 
@@ -21,31 +21,39 @@ function LandingPage({
   darkMode,
   toggleDarkMode
 }) {
-  const handleLogin = (userData) => {
-    localStorage.setItem('authToken', 'sample-token');
-    setUser(userData);
-    setIsLoggedIn(true);
-    setShowLoginModal(false);
+  // ✅ LOGIN FUNCTION (REAL API)
+  const handleLogin = async ({ email, password }) => {
+    try {
+      const res = await api.post('/users/login', { email, password });
+      const { user } = res.data;
+
+      setUser(user);
+      setIsLoggedIn(true);
+      setShowLoginModal(false);
+    } catch (error) {
+      console.error("Login failed:", error);
+      if (error.response?.data?.message) {
+        alert("Login failed: " + error.response.data.message);
+      } else {
+        alert("Something went wrong.");
+      }
+    }
   };
 
+  // ✅ SIGNUP FUNCTION (REAL API)
   const handleSignup = async ({ name, email, password }) => {
     try {
-      const response = await api.post('/users/register', {
-        name,
-        email,
-        password,
-        phone: "0000000000"
-      });
+      const res = await api.post('/users/register', { name, email, password });
 
-      const data = response.data;
+      const { user } = res.data;
 
       alert("Signup successful!");
-      setUser(data.user); // optional
+      setUser(user);
       setIsLoggedIn(true);
       setShowSignupModal(false);
     } catch (error) {
       console.error("Signup error:", error);
-      if (error.response && error.response.data && error.response.data.message) {
+      if (error.response?.data?.message) {
         alert("Signup failed: " + error.response.data.message);
       } else {
         alert("Something went wrong.");

@@ -11,9 +11,10 @@ const WatchPage = ({ user, darkMode, toggleDarkMode }) => {
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const res = await axios.get(`/api/videos/${contentId}`);
+        const res = await axios.get(`/videos/${contentId}`);
         setVideo(res.data);
       } catch (err) {
+        console.error('Error fetching video:', err);
         setError('Video not found or failed to load.');
       }
     };
@@ -23,7 +24,7 @@ const WatchPage = ({ user, darkMode, toggleDarkMode }) => {
 
   return (
     <div className={`${darkMode ? 'bg-black text-white' : 'bg-white text-black'} min-h-screen`}>
-      <Navbar />
+      <Navbar user={user} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       <div className="pt-16 p-6">
         {error ? (
           <p className="text-red-500 text-lg">{error}</p>

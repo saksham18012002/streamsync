@@ -15,13 +15,12 @@ const Login = () => {
     try {
       const res = await axios.post('/users/login', { email, password });
 
-      const { token, user } = res.data;
+      const { user } = res.data;
 
-      // Store token and user securely in localStorage
-      localStorage.setItem('token', token);
+      // Optionally store user info (DO NOT store token manually)
       localStorage.setItem('user', JSON.stringify(user));
 
-      navigate('/dashboard'); // Redirect after successful login
+      navigate('/dashboard'); // Redirect to dashboard or homepage
     } catch (err) {
       console.error('Login failed:', err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');

@@ -1,4 +1,3 @@
-// ContentPage.js
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { Link } from "react-router-dom";
@@ -15,6 +14,7 @@ const ContentPage = () => {
         console.log("Fetched videos:", response.data);
         setVideos(response.data);
       } catch (err) {
+        console.error("Error fetching videos:", err);
         setError("Failed to load videos. Please try again.");
       } finally {
         setLoading(false);

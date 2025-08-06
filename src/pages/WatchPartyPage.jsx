@@ -12,9 +12,10 @@ const WatchPartyPage = ({ user, darkMode, toggleDarkMode }) => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const res = await axios.get(`/api/sessions/${sessionId}`);
+        const res = await axios.get(`/sessions/${sessionId}`);
         setSession(res.data);
       } catch (err) {
+        console.error('Failed to load session:', err);
         setError('Watch party session not found or failed to load.');
       } finally {
         setLoading(false);
@@ -26,7 +27,7 @@ const WatchPartyPage = ({ user, darkMode, toggleDarkMode }) => {
 
   return (
     <div className={`${darkMode ? 'bg-black text-white' : 'bg-white text-black'} min-h-screen`}>
-      <Navbar />
+      <Navbar user={user} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       <div className="pt-16 p-6">
         {loading ? (
           <p className="text-lg">Loading session...</p>
@@ -34,7 +35,9 @@ const WatchPartyPage = ({ user, darkMode, toggleDarkMode }) => {
           <p className="text-red-500 text-lg">{error}</p>
         ) : session && session.videoUrl ? (
           <>
-            <h1 className="text-2xl font-bold mb-4">Watch Party - {session.sessionId}</h1>
+            <h1 className="text-2xl font-bold mb-4">
+              Watch Party – {session.title || session.sessionId}
+            </h1>
             <div className="bg-gray-800 w-full aspect-video mb-4 rounded overflow-hidden">
               <iframe
                 className="w-full h-full"
