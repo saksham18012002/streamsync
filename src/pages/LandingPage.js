@@ -9,10 +9,10 @@ import LoginModal from '../components/LoginModal';
 import SignupModal from '../components/SignupModal';
 import api from '../api/axios';
 
-function LandingPage({ 
-  isLoggedIn, 
-  setIsLoggedIn, 
-  user, 
+function LandingPage({
+  isLoggedIn,
+  setIsLoggedIn,
+  user,
   setUser,
   showLoginModal,
   setShowLoginModal,
@@ -24,6 +24,8 @@ function LandingPage({
   // ✅ LOGIN FUNCTION (REAL API)
   const handleLogin = async ({ email, password }) => {
     try {
+      console.log('Sending login request...', email, password);
+
       const res = await api.post('/users/login', { email, password });
       const { user } = res.data;
 
@@ -40,24 +42,37 @@ function LandingPage({
     }
   };
 
-  // ✅ SIGNUP FUNCTION (REAL API)
+
+  // ✅ SIGNUP FUNCTION
   const handleSignup = async ({ name, email, password }) => {
     try {
-      const res = await api.post('/users/register', { name, email, password });
+      console.log('Sending signup request...', name, email);
 
-      const { user } = res.data;
+      const res = await api.post(
+        '/users/register',
+        { name, email, password },
+        {
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
-      alert("Signup successful!");
-      setUser(user);
-      setIsLoggedIn(true);
-      setShowSignupModal(false);
-    } catch (error) {
-      console.error("Signup error:", error);
-      if (error.response?.data?.message) {
-        alert("Signup failed: " + error.response.data.message);
+      console.log('Signup response:', res.data);
+
+      // If backend sends user data after signup
+      if (res.data?.user) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        setUser(res.data.user);
+        setIsLoggedIn(true);
+        setShowSignupModal(false);
+        alert('Signup successful!');
       } else {
-        alert("Something went wrong.");
+        alert(res.data?.message || 'Signup successful! Please login.');
+        setShowSignupModal(false);
       }
+    } catch (error) {
+      console.error('Signup failed:', error);
+      alert(error.response?.data?.message || 'Signup failed. Please try again.');
     }
   };
 
@@ -70,7 +85,7 @@ function LandingPage({
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
-      <Navbar 
+      <Navbar
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         user={user}
@@ -78,18 +93,18 @@ function LandingPage({
       />
 
       <main className="flex-grow">
-        <HeroSection 
-          isLoggedIn={isLoggedIn} 
+        <HeroSection
+          isLoggedIn={isLoggedIn}
           setShowSignupModal={setShowSignupModal}
           handleLearnMore={handleLearnMore}
           darkMode={darkMode}
         />
-        
+
         <HowItWorks darkMode={darkMode} />
         <Features darkMode={darkMode} />
-        
-        <CTASection 
-          isLoggedIn={isLoggedIn} 
+
+        <CTASection
+          isLoggedIn={isLoggedIn}
           setShowSignupModal={setShowSignupModal}
           darkMode={darkMode}
         />
@@ -98,8 +113,8 @@ function LandingPage({
       <Footer darkMode={darkMode} />
 
       {showLoginModal && (
-        <LoginModal 
-          setShowLoginModal={setShowLoginModal} 
+        <LoginModal
+          setShowLoginModal={setShowLoginModal}
           setShowSignupModal={setShowSignupModal}
           handleLogin={handleLogin}
           darkMode={darkMode}
@@ -107,8 +122,8 @@ function LandingPage({
       )}
 
       {showSignupModal && (
-        <SignupModal 
-          setShowSignupModal={setShowSignupModal} 
+        <SignupModal
+          setShowSignupModal={setShowSignupModal}
           setShowLoginModal={setShowLoginModal}
           handleSignup={handleSignup}
           darkMode={darkMode}

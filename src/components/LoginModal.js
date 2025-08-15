@@ -9,7 +9,7 @@ const LoginModal = ({ setShowLoginModal, setShowSignupModal, handleLogin, darkMo
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email && password) {
-      handleLogin({ email, name: 'User' }); // In a real app, name would come from the backend
+      handleLogin({ email, password }); // ✅ send correct credentials
     } else {
       setError('Please enter both email and password');
     }
@@ -39,8 +39,8 @@ const LoginModal = ({ setShowLoginModal, setShowSignupModal, handleLogin, darkMo
             onClick={() => setShowLoginModal(false)} 
             className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -99,7 +99,7 @@ const LoginModal = ({ setShowLoginModal, setShowSignupModal, handleLogin, darkMo
 
           <div className="mt-6 text-center">
             <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              Don't have an account? {' '}
+              Don't have an account?{' '}
               <button 
                 type="button" 
                 onClick={switchToSignup} 

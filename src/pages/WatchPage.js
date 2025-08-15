@@ -7,30 +7,58 @@ const WatchPage = ({ user, darkMode, toggleDarkMode }) => {
   const { contentId } = useParams();
   const [video, setVideo] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVideo = async () => {
+      setLoading(true);
+      setError('');
+
       try {
-        const res = await axios.get(`/videos/${contentId}`);
-        setVideo(res.data);
+        console.log(`Fetching video with ID: ${contentId}`);
+
+        const res = await axios.get(
+          `http://localhost:3000/api/videos/${contentId}`,
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        console.log('Video data from backend:', res.data);
+
+        if (res.data && res.data._id) {
+          setVideo(res.data);
+        } else {
+          setError(res.data?.message || 'Video not found.');
+        }
       } catch (err) {
         console.error('Error fetching video:', err);
-        setError('Video not found or failed to load.');
+        setError(err.response?.data?.message || 'Failed to load video.');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchVideo();
+    if (contentId) fetchVideo();
   }, [contentId]);
 
   return (
     <div className={`${darkMode ? 'bg-black text-white' : 'bg-white text-black'} min-h-screen`}>
       <Navbar user={user} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       <div className="pt-16 p-6">
-        {error ? (
+        {loading && <p className="text-lg">Loading video...</p>}
+
+        {error && !loading && (
           <p className="text-red-500 text-lg">{error}</p>
-        ) : video ? (
+        )}
+
+        {video && !loading && (
           <>
             <h1 className="text-2xl font-bold mb-4">{video.title}</h1>
+
             <div className="bg-gray-800 w-full aspect-video mb-4 rounded overflow-hidden">
               <iframe
                 className="w-full h-full"
@@ -40,10 +68,11 @@ const WatchPage = ({ user, darkMode, toggleDarkMode }) => {
                 allowFullScreen
               ></iframe>
             </div>
-            <p className="text-gray-300">{video.description}</p>
+
+            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              {video.description}
+            </p>
           </>
-        ) : (
-          <p className="text-lg">Loading video...</p>
         )}
       </div>
     </div>

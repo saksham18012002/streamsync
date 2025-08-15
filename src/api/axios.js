@@ -3,8 +3,10 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:3000/api",
-  withCredentials: true, // ✅ ensures cookies are sent with every request
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json"
+  }
 });
 
-// No need to manually attach token
 export default api;
