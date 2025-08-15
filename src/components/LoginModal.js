@@ -9,7 +9,7 @@ const LoginModal = ({ setShowLoginModal, setShowSignupModal, handleLogin, darkMo
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email && password) {
-      handleLogin({ email, password }); // ✅ send correct credentials
+      handleLogin({ email, name: 'User' }); // In a real app, name would come from the backend
     } else {
       setError('Please enter both email and password');
     }
