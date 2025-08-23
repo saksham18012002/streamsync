@@ -1,65 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import axios from '../api/axios';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import axios from "../api/axios";
 
 const WatchPartyPage = ({ user, darkMode, toggleDarkMode }) => {
-  const { sessionId } = useParams();
+  const { partyCode } = useParams();
   const [session, setSession] = useState(null);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchSession = async () => {
       setLoading(true);
-      setError('');
+      setError("");
 
       try {
-        console.log(`Fetching watch party session with ID: ${sessionId}`);
+        console.log(`Fetching session with code: ${partyCode}`);
 
-        const res = await axios.get(
-          `http://localhost:3000/api/sessions/${sessionId}`,
-          {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const res = await axios.get(`/sessions/${partyCode}`);
 
-        console.log('Session data from backend:', res.data);
+        console.log("Session API response:", res.data);
 
-        if (res.data && res.data._id) {
-          setSession(res.data);
+        if (res.data?.success && res.data?.data) {
+          setSession(res.data.data); // ✅ actual session object
         } else {
-          setError(res.data?.message || 'Session not found.');
+          setError(res.data?.message || "Session not found.");
         }
       } catch (err) {
-        console.error('Failed to load session:', err);
-        setError(err.response?.data?.message || 'Failed to load watch party session.');
+        console.error("Error fetching session:", err);
+        setError(err.response?.data?.message || "Failed to load session.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (sessionId) fetchSession();
-  }, [sessionId]);
+    if (partyCode) fetchSession();
+  }, [partyCode]);
 
   return (
-    <div className={`${darkMode ? 'bg-black text-white' : 'bg-white text-black'} min-h-screen`}>
+    <div className={`${darkMode ? "bg-black text-white" : "bg-white text-black"} min-h-screen`}>
       <Navbar user={user} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-
       <div className="pt-16 p-6">
-        {loading && <p className="text-lg">Loading session...</p>}
+        {loading && <p className="text-lg">Loading watch party...</p>}
 
         {error && !loading && (
           <p className="text-red-500 text-lg">{error}</p>
         )}
 
-        {session && !loading && session.videoUrl ? (
+        {session && !loading && (
           <>
             <h1 className="text-2xl font-bold mb-4">
-              Watch Party – {session.title || session.sessionId}
+              Watch Party: {session.partyCode}
             </h1>
 
             <div className="bg-gray-800 w-full aspect-video mb-4 rounded overflow-hidden">
@@ -72,12 +63,13 @@ const WatchPartyPage = ({ user, darkMode, toggleDarkMode }) => {
               ></iframe>
             </div>
 
-            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              You're watching with friends 🎉
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+              Host: {session.host?.name || "Unknown"}
+            </p>
+            <p className={`${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+              Participants: {session.participants?.length || 0}
             </p>
           </>
-        ) : (
-          !loading && <p className="text-lg">No video found for this session.</p>
         )}
       </div>
     </div>

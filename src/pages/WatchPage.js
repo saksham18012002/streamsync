@@ -17,20 +17,12 @@ const WatchPage = ({ user, darkMode, toggleDarkMode }) => {
       try {
         console.log(`Fetching video with ID: ${contentId}`);
 
-        const res = await axios.get(
-          `http://localhost:3000/api/videos/${contentId}`,
-          {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const res = await axios.get(`/videos/${contentId}`);
 
-        console.log('Video data from backend:', res.data);
+        console.log('Video API response:', res.data);
 
-        if (res.data && res.data._id) {
-          setVideo(res.data);
+        if (res.data?.success && res.data?.data) {
+          setVideo(res.data.data); // ✅ actual video object
         } else {
           setError(res.data?.message || 'Video not found.');
         }

@@ -1,5 +1,6 @@
+// src/pages/ContentPage.js
 import React, { useEffect, useState } from "react";
-import axios from "../api/axios";
+import api from "../api/axios";
 import { Link } from "react-router-dom";
 
 const ContentPage = () => {
@@ -13,30 +14,24 @@ const ContentPage = () => {
       setError("");
 
       try {
-        console.log("Fetching videos from backend...");
+        console.log("Fetching videos from backend: GET /api/videos");
+        const res = await api.get("/videos");
 
-        const res = await axios.get(
-          "http://localhost:3000/api/videos",
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // Backend likely returns: { success, message, data: [...] }
+        const payload = res?.data;
+        const list = Array.isArray(payload) ? payload : payload?.data;
 
-        console.log("Fetched videos:", res.data);
+        console.log("API /videos response:", payload);
 
-        // If backend sends message instead of array
-        if (Array.isArray(res.data) && res.data.length > 0) {
-          setVideos(res.data);
+        if (Array.isArray(list) && list.length > 0) {
+          setVideos(list);
         } else {
           setVideos([]);
-          setError(res.data?.message || "No videos available at the moment.");
+          setError(payload?.message || "No videos available at the moment.");
         }
       } catch (err) {
         console.error("Error fetching videos:", err);
-        setError(err.response?.data?.message || "Failed to load videos. Please try again.");
+        setError(err?.response?.data?.message || "Failed to load videos. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -54,7 +49,9 @@ const ContentPage = () => {
       {error && !loading && <p className="text-center text-red-500">{error}</p>}
 
       {!loading && videos.length === 0 && !error && (
-        <p className="text-center text-gray-500">No videos available yet. Please check back later.</p>
+        <p className="text-center text-gray-500">
+          No videos available yet. Please check back later.
+        </p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
