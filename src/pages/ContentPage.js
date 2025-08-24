@@ -1,6 +1,5 @@
-// src/pages/ContentPage.js
 import React, { useEffect, useState } from "react";
-import api from "../api/axios";
+import api from "../api/axios";   // apna axios instance
 import { Link } from "react-router-dom";
 
 const ContentPage = () => {
@@ -14,24 +13,26 @@ const ContentPage = () => {
       setError("");
 
       try {
-        console.log("Fetching videos from backend: GET /api/videos");
+        console.log("Fetching videos from backend...");
+
+        // ✅ ab instance ka use kar rahe hain
         const res = await api.get("/videos");
 
-        // Backend likely returns: { success, message, data: [...] }
-        const payload = res?.data;
-        const list = Array.isArray(payload) ? payload : payload?.data;
+        console.log("Fetched videos:", res.data);
 
-        console.log("API /videos response:", payload);
-
-        if (Array.isArray(list) && list.length > 0) {
-          setVideos(list);
+        // ✅ Fix here
+        if (Array.isArray(res.data.data) && res.data.data.length > 0) {
+          setVideos(res.data.data);
         } else {
           setVideos([]);
-          setError(payload?.message || "No videos available at the moment.");
+          setError(res.data?.message || "No videos available at the moment.");
         }
+
       } catch (err) {
         console.error("Error fetching videos:", err);
-        setError(err?.response?.data?.message || "Failed to load videos. Please try again.");
+        setError(
+          err.response?.data?.message || "Failed to load videos. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -46,7 +47,9 @@ const ContentPage = () => {
 
       {loading && <p className="text-center">Loading videos...</p>}
 
-      {error && !loading && <p className="text-center text-red-500">{error}</p>}
+      {error && !loading && (
+        <p className="text-center text-red-500">{error}</p>
+      )}
 
       {!loading && videos.length === 0 && !error && (
         <p className="text-center text-gray-500">
